@@ -2,7 +2,7 @@
 
 Srivix is a full-stack AI-powered mock interview platform that helps users simulate real job interviews based on their resumes, skills, and job roles. Built using **Next.js**, **React**, **Drizzle ORM**, **PostgreSQL**, and **Gemini AI**, this app enables users to prepare for interviews with dynamically generated questions, record their answers (audio & webcam), and receive AI-powered feedback.
 
-![Srivix Banner](./public/srivix-banner.png) <!-- Optional: Add a screenshot or banner -->
+
 
 ## 🚀 Features
 
