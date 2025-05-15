@@ -33,7 +33,7 @@ function AddNewInterview() {
 
   const onSubmit = async (e) => {
     setLoading(true);
-    e.preventDefault(); // Prevent the default form submission and page refresh
+    e.preventDefault(); // Prevent default form submission
 
     console.log(jobPosition, jobDesc, jobExperience);
 
@@ -50,38 +50,46 @@ function AddNewInterview() {
 
     try {
       const result = await chatSession.sendMessage(InputPrompt);
-      const MockJsonResp = result.response
-        .text()
-        .replace("```json", "")
-        .replace("```", "")
-        .trim(); // Remove code blocks from the response to parse JSON properly
+      const rawResponse = await result.response.text();
 
-      console.log(JSON.parse(MockJsonResp));
-      setJsonResponse(MockJsonResp); // Store response as a string in state
+      const cleanedResponse = rawResponse
+        .replace(/```json/g, "")
+        .replace(/```/g, "")
+        .trim();
 
-      if (MockJsonResp) {
-        // Inserting data into the database
-        const resp = await db
-          .insert(MockInterview)
-          .values({
-            mockId: uuidv4(), // Generate unique ID using uuid
-            jsonMockResp: MockJsonResp,
-            jobPosition: jobPosition,
-            jobDesc: jobDesc,
-            jobExperience: jobExperience,
-            createdBy: user?.primaryEmailAddress?.emailAddress,
-            createdAt: moment().format("DD-MM-YYYY, h:mm:ss a"),
-          })
-          .returning({ mockId: MockInterview.mockId });
+      let parsedJson;
+      try {
+        parsedJson = JSON.parse(cleanedResponse);
+        setJsonResponse(parsedJson); // Store parsed JSON
+        console.log("✅ Parsed JSON:", parsedJson);
+      } catch (parseErr) {
+        console.error("❌ JSON parsing failed:", parseErr.message);
+        console.log("⚠️ Raw AI response:", cleanedResponse);
+        setJsonResponse([]); // fallback
+        return; // Exit early
+      }
 
-        console.log("Inserted ID:", resp);
-        if (resp) {
-          setOpenDialog(false);
-          router.push("/dashboard/interview/" + resp[0]?.mockId); // Redirect to interview page
-        }
+      // If everything is fine, save to DB
+      const resp = await db
+        .insert(MockInterview)
+        .values({
+          mockId: uuidv4(),
+          jsonMockResp: JSON.stringify(parsedJson),
+          jobPosition: jobPosition,
+          jobDesc: jobDesc,
+          jobExperience: jobExperience,
+          createdBy: user?.primaryEmailAddress?.emailAddress,
+          createdAt: moment().format("DD-MM-YYYY, h:mm:ss a"),
+        })
+        .returning({ mockId: MockInterview.mockId });
+
+      console.log("Inserted ID:", resp);
+      if (resp) {
+        setOpenDialog(false);
+        router.push("/dashboard/interview/" + resp[0]?.mockId);
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("💥 Unexpected error:", error);
     }
 
     setLoading(false);
@@ -149,8 +157,8 @@ function AddNewInterview() {
                 <Button type="submit" disabled={loading}>
                   {loading ? (
                     <>
-                      <Loader className="animate-spin" /> 'Generating Your
-                      Interview Questions'
+                      <Loader className="animate-spin" /> Generating Your
+                      Interview Questions
                     </>
                   ) : (
                     "Start Interview"
@@ -166,3 +174,4 @@ function AddNewInterview() {
 }
 
 export default AddNewInterview;
+
