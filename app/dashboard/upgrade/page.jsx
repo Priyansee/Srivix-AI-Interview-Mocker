@@ -59,7 +59,7 @@ export default function Upgrade() {
             Recommended
           </div>
           <h2 className="text-xl font-bold text-foreground">Pro</h2>
-          <p className="text-2xl font-bold text-foreground mt-2">$29/month</p>
+          <p className="text-2xl font-bold text-foreground mt-2">500₹/month</p>
           <ul className="text-muted-foreground text-sm mt-4 space-y-2">
             <li>✓ Unlimited mock interviews</li>
             <li>✓ Advanced AI feedback</li>
