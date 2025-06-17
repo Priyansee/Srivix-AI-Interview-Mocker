@@ -32,7 +32,7 @@ Srivix is a full-stack AI-powered mock interview platform that helps users simul
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/yourusername/srivix-ai-mock-interview.git
+git clone https://github.com/Priyansee/Srivix-AI-Interview-Mocker.git
 cd srivix-ai-mock-interview
 
 # 2. Install dependencies
